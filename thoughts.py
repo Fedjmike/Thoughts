@@ -15,9 +15,9 @@ template_globals = {"socials": []}
 
 urls = (
     '/', 'HomeServer',
-	'/taglist', 'TagListServer',
-	'/archive', 'ArchiveServer',
-	'/tag/(.*)', 'TagServer',
+    '/taglist', 'TagListServer',
+    '/archive', 'ArchiveServer',
+    '/tag/(.*)', 'TagServer',
     '/(.*)', 'ThoughtServer',
 )
 
@@ -39,28 +39,28 @@ renderpage = web.template.render(templates_path, globals=template_globals, base=
 #Markdown
 
 md_extensions = ["markdown.extensions.codehilite",
-				 "markdown.extensions.def_list",
-				 "markdown.extensions.footnotes",
-				 "markdown.extensions.meta"]
+                 "markdown.extensions.def_list",
+                 "markdown.extensions.footnotes",
+                 "markdown.extensions.meta"]
 markdowner = markdown.Markdown(md_extensions,
-							   extension_configs={"markdown.extensions.codehilite": {"css_class": "code"}},
-							   output_format="html5")
+                               extension_configs={"markdown.extensions.codehilite": {"css_class": "code"}},
+                               output_format="html5")
 
 
 #Bleacher
 
 tags = ["span", "br", "p", "div", "h1", "h2", "h3", "h4", "h5", "h6",
-		"a", "blockquote", "pre", "code",
-		"li", "ol", "ul", "dl", "dt", "dd",
-		"strong", "em", "sup", "hr", "acronym", "abbr"]
+        "a", "blockquote", "pre", "code",
+        "li", "ol", "ul", "dl", "dt", "dd",
+        "strong", "em", "sup", "hr", "acronym", "abbr"]
 attrs = {"*": ["class"],
-		 "a": ["href", "title"],
-		 "acronym": ["title"],
-		 "abbr": ["title"]}
+         "a": ["href", "title"],
+         "acronym": ["title"],
+         "abbr": ["title"]}
 bleacher = lambda str: bleach.clean(str, tags, attrs)
 
 #
-							   
+
 def has_suffix(str, suffix):
     return str[-len(suffix):] == suffix
 
@@ -71,8 +71,8 @@ def thoughts_all():
             yield thought_get(filename)
 
 def thoughts_by_tag(tag):
-	return filter(lambda thought: tag in thought.tags, thoughts_all())
-			
+    return filter(lambda thought: tag in thought.tags, thoughts_all())
+
 def thought_get(name):
     filenames = [thoughts_path + name,
                  thoughts_path + name + ".md",
@@ -80,8 +80,8 @@ def thought_get(name):
 
     for filename in filenames:
         try:
-			with open(filename) as file:
-				return Thought(name, file)
+            with open(filename) as file:
+                return Thought(name, file)
 
         except IOError:
             pass
@@ -89,41 +89,41 @@ def thought_get(name):
     return None
 
 class Thought:
-	def __init__(self, name, file):
-		self.title = None
-		self.tags = []
-		#Remove extension
-		self.name = name[:name.rfind(".")]
-		
-		#Process the text
-		encoded = smart_unicode(file.read())
-		marked = markdowner.reset().convert(encoded)
-		self.contents = bleacher(marked)
-		
-		#Import the relevant keys from the metadata into self
-		for key, join in [("title", True), ("tags", False)]:
-			if key in markdowner.Meta:
-				value = markdowner.Meta[key]
-				
-				if join:
-					value = "\n".join(value)
-				
-				setattr(self, key, value)
-	
+    def __init__(self, name, file):
+        self.title = None
+        self.tags = []
+        #Remove extension
+        self.name = name[:name.rfind(".")]
+        
+        #Process the text
+        encoded = smart_unicode(file.read())
+        marked = markdowner.reset().convert(encoded)
+        self.contents = bleacher(marked)
+        
+        #Import the relevant keys from the metadata into self
+        for key, join in [("title", True), ("tags", False)]:
+            if key in markdowner.Meta:
+                value = markdowner.Meta[key]
+                
+                if join:
+                    value = "\n".join(value)
+                
+                setattr(self, key, value)
+    
 def tags_all():
-	tags = collections.defaultdict(lambda: 0)
-	
-	for thought in thoughts_all():
-		for tag in thought.tags:
-			tags[tag] += 1
-	
-	return tags
-	
+    tags = collections.defaultdict(lambda: 0)
+    
+    for thought in thoughts_all():
+        for tag in thought.tags:
+            tags[tag] += 1
+    
+    return tags
+    
 class Social:
-	def __init__(self, label, link):
-		self.label = label
-		self.link = link
-	
+    def __init__(self, label, link):
+        self.label = label
+        self.link = link
+    
 class HomeServer:
     def GET(self):
         thoughts = [render.inlinethought(thought) for thought in thoughts_all()]
@@ -137,22 +137,22 @@ class ThoughtServer:
             return web.notfound()
 
         return renderpage.thought(thought)
-		
+        
 class TagServer:
-	def GET(self, tag):
-		thoughts = [render.inlinethought(thought) for thought in thoughts_by_tag(tag)]
-		return renderpage.tag(tag, thoughts)
+    def GET(self, tag):
+        thoughts = [render.inlinethought(thought) for thought in thoughts_by_tag(tag)]
+        return renderpage.tag(tag, thoughts)
 
 class TagListServer:
-	def GET(self):
-		return renderpage.taglist(tags_all())
-		
+    def GET(self):
+        return renderpage.taglist(tags_all())
+        
 class ArchiveServer:
-	def GET(self):
-		return renderpage.archive(thoughts_all())
-		
+    def GET(self):
+        return renderpage.archive(thoughts_all())
+
 template_globals["socials"] += [Social("github", "http://www.github.com/Fedjmike"),
-								Social("twitter", "http://www.twitter.com/Fedjmike")]
-		
+                                Social("twitter", "http://www.twitter.com/Fedjmike")]
+
 if __name__ == "__main__":
     app.run()
