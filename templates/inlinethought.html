@@ -13,7 +13,7 @@ $def with (thought)
 					$ n = 4
 		
 			$for tag in thought.tags:
-				<span><a href="/tag/$tag">$tag</a></span>
+				<span><a href="/tag/$dehyphenify(tag)">$tag</a></span>
 				
 				$if loop.index0 % n == n-1:
 					<br/>

@@ -5,13 +5,19 @@ from smartencoding import smart_unicode
 
 import os, collections
 
+def hyphenify(str):
+    return str.replace("-", " ")
+    
+def dehyphenify(str):
+    return str.replace(" ", "-")
+
 #Basic config
 
 base_path = "./"
 thoughts_path = base_path + "thoughts/"
 templates_path = base_path + "templates/"
 
-template_globals = {"socials": []}
+template_globals = {"socials": [], "dehyphenify": dehyphenify}
 
 urls = (
     '/', 'HomeServer',
@@ -140,7 +146,13 @@ class ThoughtServer:
         
 class TagServer:
     def GET(self, tag):
-        thoughts = [render.inlinethought(thought) for thought in thoughts_by_tag(tag)]
+        thoughts = thoughts_by_tag(tag)
+        
+        if "-" in tag:
+            tag = hyphenify(tag)
+            thoughts += thoughts_by_tag(tag)
+        
+        thoughts = [render.inlinethought(thought) for thought in thoughts]
         return renderpage.tag(tag, thoughts)
 
 class TagListServer:
