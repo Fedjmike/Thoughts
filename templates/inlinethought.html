@@ -25,5 +25,12 @@ $def with (thought)
 			<h1 class="title"><a href="/$thought.name">$thought.title</a></h1>
 
 	</header>
-	<article class="contents">$:thought.contents</article>
+	<article class="contents">
+        $if thought.summary is not None:
+            $:thought.summary
+            <a class="full-thought" href="/$thought.name">Read the full thought</a>
+            
+        $else:
+            $:thought.contents
+    </article>
 </div>

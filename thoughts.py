@@ -94,20 +94,25 @@ def thought_get(name):
 
     return None
 
+def none_apply(f, x):
+    return None if x is None else f(x)
+
 class Thought:
     def __init__(self, name, file):
         self.title = None
+        self.summary = None
         self.tags = []
         #Remove extension
         self.name = name[:name.rfind(".")]
         
         join_keys = set(["title", "summary"])
-        metadata_keys = set(["tags"]) | join_keys
+        markdown_keys = set(["summary"])
+        bleach_keys = markdown_keys | set(["contents"])
+        metadata_keys = (set(["tags"]) | join_keys | bleach_keys) - set("contents")
         
         #Process the text
         encoded = smart_unicode(file.read())
-        marked = markdowner.reset().convert(encoded)
-        self.contents = bleacher(marked)
+        self.contents = markdowner.reset().convert(encoded)
         
         #Import the relevant keys from the metadata into self
         for key in metadata_keys:
@@ -118,6 +123,14 @@ class Thought:
                     value = "\n".join(value)
                 
                 setattr(self, key, value)
+        
+        for key in markdown_keys:
+            mark = lambda x: markdowner.reset().convert(x)
+            setattr(self, key, none_apply(mark, getattr(self, key)))
+        
+        #Bleach keys used as HTML
+        for key in bleach_keys:
+            setattr(self, key, none_apply(bleacher, getattr(self, key)))
     
 def tags_all():
     tags = collections.defaultdict(lambda: 0)
