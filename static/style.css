@@ -120,14 +120,14 @@ hr {
 /*Layout*/
 
 .page {
-    margin-left: 2rem;
+    margin-left: 4rem;
 }
 
 .navbar {
 	position: fixed;
 	display: block;
 	width: 100%;
-	max-width: 800px;
+	max-width: 50rem;
 }
 
 .page .content {
@@ -161,6 +161,10 @@ hr {
 
 /*Thoughts*/
 
+.thought {
+    width: 50rem;
+}
+
 .thought header {
 	overflow: hidden;
 }
@@ -191,6 +195,8 @@ hr {
 	padding-top: 1rem;
 }
 
+/*Inline thoughts*/
+
 .inline.thought:not(:last-child) {
 	max-height: 20rem;
 	overflow: hidden;
@@ -205,7 +211,7 @@ hr {
 .inline.thought {
     float: left;
     display: inline-block;
-    margin-left: 2rem;
+    margin-right: 2rem;
     margin-bottom: 3rem;
     max-width: 50rem;
     min-width: 50rem;
