@@ -101,17 +101,20 @@ class Thought:
         #Remove extension
         self.name = name[:name.rfind(".")]
         
+        join_keys = set(["title", "summary"])
+        metadata_keys = set(["tags"]) | join_keys
+        
         #Process the text
         encoded = smart_unicode(file.read())
         marked = markdowner.reset().convert(encoded)
         self.contents = bleacher(marked)
         
         #Import the relevant keys from the metadata into self
-        for key, join in [("title", True), ("tags", False)]:
+        for key in metadata_keys:
             if key in markdowner.Meta:
                 value = markdowner.Meta[key]
                 
-                if join:
+                if key in join_keys:
                     value = "\n".join(value)
                 
                 setattr(self, key, value)
