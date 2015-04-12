@@ -1,31 +1,31 @@
 $def with (thought)
 
 <div class="inline thought">
-	<header>
-		<div class="tags">
-			$ n = 999
-			
-			$if len(thought.tags) > 4:
-				$if len(thought.tags) % 3 == 2:
-					$ n = 3
-					
-				$else:
-					$ n = 4
-		
-			$for tag in thought.tags:
-				<span><a href="/tag/$dehyphenify(tag)">$tag</a></span>
-				
-				$if loop.index0 % n == n-1:
-					<br/>
-		</div>
-		$if thought.title is None:
-			<a class="no title" href="/$thought.name"></a>
-		
-		$else:
-			<h1 class="title"><a href="/$thought.name">$thought.title</a></h1>
+    <header>
+        $if thought.title is None:
+            <a class="no title" href="/$thought.name"></a>
 
-	</header>
-	<article class="contents">
+        $else:
+            <h1 class="title"><a href="/$thought.name">$thought.title</a></h1>
+        
+        <div class="tags">
+            $ n = 999
+            
+            $if len(thought.tags) > 4:
+                $if len(thought.tags) % 3 == 2:
+                    $ n = 3
+                    
+                $else:
+                    $ n = 4
+
+            $for tag in thought.tags:
+                <span><a href="/tag/$dehyphenify(tag)">$tag</a></span>
+                
+                $if loop.index0 % n == n-1:
+                    <br/>
+        </div>
+    </header>
+    <article class="contents">
         $if thought.summary is not None:
             $:thought.summary
             <a class="full-thought" href="/$thought.name">Read the full thought</a>

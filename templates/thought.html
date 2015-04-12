@@ -3,12 +3,12 @@ $def with (thought)
 $var title: $thought.title
 
 <div class="thought">
-	<header>
-		<div class="tags">
-			$for tag in thought.tags:
-				<span><a href="/tag/$tag">$tag</a></span>
-		</div>
-		<h1 class="title">$thought.title</h1>
-	</header>
-	<article class="contents">$:thought.contents</article>
+    <header>
+        <h1 class="title">$thought.title</h1>
+        <div class="tags">
+            $for tag in thought.tags:
+                <span><a href="/tag/$tag">$tag</a></span>
+        </div>
+    </header>
+    <article class="contents">$:thought.contents</article>
 </div>
