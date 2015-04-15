@@ -94,11 +94,14 @@ def thought_get(name):
 
     return None
 
-def none_apply(f, x):
-    return None if x is None else f(x)
-
 class Thought:
     def __init__(self, name, file):
+        def through_none(f):
+            return lambda x: None if x is None else f(x)
+            
+        def attr_apply(obj, attr, f):
+            setattr(obj, key, f(getattr(obj, key)))
+        
         self.title = None
         self.summary = None
         self.tags = []
@@ -126,11 +129,11 @@ class Thought:
         
         for key in markdown_keys:
             mark = lambda x: markdowner.reset().convert(x)
-            setattr(self, key, none_apply(mark, getattr(self, key)))
+            attr_apply(self, key, through_none(mark))
         
         #Bleach keys used as HTML
         for key in bleach_keys:
-            setattr(self, key, none_apply(bleacher, getattr(self, key)))
+            attr_apply(self, key, through_none(bleacher))
     
 def tags_all():
     tags = collections.defaultdict(lambda: 0)
